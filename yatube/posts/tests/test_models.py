@@ -29,7 +29,6 @@ class PostModelTest(TestCase):
             text='Тестовая пост',
         )
 
-
     def test_verbose_name(self):
         """verbose_name поля title совпадает с ожидаемым."""
         task = PostModelTest.post
@@ -63,7 +62,7 @@ class PostModelTest(TestCase):
         """Содержимое поля title преобразуется в slug."""
         task = PostModelTest.group
         slug = task.slug
-        self.assertEquals(slug, 'zh'*50)
+        self.assertEquals(slug, 'zh' * 50)
 
     def test_text_slug_max_length_not_exceed(self):
         """

@@ -5,6 +5,7 @@ from posts.models import Group
 
 User = get_user_model()
 
+
 class StaticURLTests(TestCase):
     def setUp(self):
         # Устанавливаем данные для тестирования

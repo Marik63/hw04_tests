@@ -32,10 +32,6 @@ class TaskCreateFormTests(TestCase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        # Модуль shutil - библиотека Python с прекрасными инструментами 
-        # для управления файлами и директориями: 
-        # создание, удаление, копирование, перемещение, изменение папок и файлов
-        # Метод shutil.rmtree удаляет директорию и всё её содержимое
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self):
@@ -72,14 +68,14 @@ class TaskCreateFormTests(TestCase):
         # Проверяем, сработал ли редирект
         self.assertRedirects(response, reverse('deals:task_added'))
         # Проверяем, увеличилось ли число постов
-        self.assertEqual(Group.objects.count(), tasks_count+1)
+        self.assertEqual(Group.objects.count(), tasks_count + 1)
         # Проверяем, что создалась запись с нашим слагом
         self.assertTrue(
             Group.objects.filter(
                 slug='testovyij-zagolovok',
                 text='Тестовый текст',
                 image='tasks/small.gif'
-                ).exists()
+            ).exists()
         )
 
     def test_cant_create_existing_slug(self):

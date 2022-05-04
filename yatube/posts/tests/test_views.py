@@ -71,7 +71,7 @@ class PostPagesTests(TestCase):
     def test_task_list_page_list_is_1(self):
         # Удостоверимся, что на страницу со списком заданий передаётся
         # ожидаемое количество объектов
-        
+
         response = self.authorized_client.get(reverse('deals:task_list'))
         self.assertEqual(response.context['object_list'].count(), 1)
 
@@ -96,7 +96,7 @@ class PostPagesTests(TestCase):
         """Шаблон task_detail сформирован с правильным контекстом."""
         response = self.authorized_client.get(
             reverse('deals:task_detail', kwargs={'slug': 'test-slug'})
-            )
+        )
         self.assertEqual(response.context['task'].title, 'Заголовок')
         self.assertEqual(response.context['task'].text, 'Текст')
         self.assertEqual(response.context['task'].slug, 'test-slug')
