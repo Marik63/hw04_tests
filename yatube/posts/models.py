@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from pytils.translit import slugify
 
 User = get_user_model()
 
@@ -55,10 +54,3 @@ class Post(models.Model):
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
 
-    # Расширение встроенного метода save(): если поле slug не заполнено -
-    # транслитерировать в латиницу содержимое поля title и
-    # обрезать до ста знаков
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)[:100]
-        super().save(*args, **kwargs)
