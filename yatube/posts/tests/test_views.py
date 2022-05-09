@@ -4,7 +4,7 @@ import tempfile
 
 from django.contrib.auth import get_user_model
 from django import forms
-from django.test import Client, TestCase, override_settings, tag
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
@@ -212,47 +212,3 @@ class PostsPagesTests(TestCase):
         url = reverse('posts:group_list', args=['posts_test_slug2'])
         response = self.authorized_client.get(url)
         self.assertEqual(len(response.context["page_obj"]), 0)
-
-    @tag('sprint6')
-    def test_page_have_a_post_with_image(self):
-        """Проверяем context содержит изображение"""
-        url = reverse('posts:group_list', args=['posts_test_image_slug'])
-        response = self.authorized_client.get(url)
-        print(response.context.get("page_obj")[0].text)
-        self.assertNotEqual(len(response.context.get("page_obj")[0].image), 0)
-
-    @tag('sprint6')
-    def test_detail_page_have_a_post_with_image(self):
-        """Проверяем что detail в context содержит изображение"""
-        post = PostsPagesTests.post_image
-        url = reverse('posts:post_detail', args=[post.id])
-        response = self.authorized_client.get(url)
-        self.assertNotEqual(len(response.context.get("post").image), 0)
-
-    @tag('sprint6')
-    def test_index_page_have_a_post_with_image(self):
-        """Проверяем что index в context содержит изображение"""
-        url = reverse('posts:index')
-        response = self.authorized_client.get(url)
-        for cont in response.context.get("page_obj"):
-            with self.subTest(cont=cont):
-                if cont.image:
-                    self.assertNotEqual(len(cont.image), 0)
-                else:
-                    self.assertRaisesMessage(
-                        ValueError, "The 'image' attribute has no file "
-                                    "associated with it.")
-
-    @tag('sprint6')
-    def test_profile_page_have_a_post_with_image(self):
-        """Проверяем что index в context содержит изображение"""
-        url = reverse('posts:profile', args=['posts_test'])
-        response = self.authorized_client.get(url)
-        for cont in response.context.get("page_obj"):
-            with self.subTest(cont=cont):
-                if cont.image:
-                    self.assertNotEqual(len(cont.image), 0)
-                else:
-                    self.assertRaisesMessage(
-                        ValueError, "The 'image' attribute has no file "
-                                    "associated with it.")
