@@ -29,13 +29,13 @@ class PostModelTest(TestCase):
         """ Проверка наличия поля title в модели данных группы """
         task = PostModelTest.group
         expected_object_name = task.title
-        self.assertEquals(expected_object_name, str(task))
+        self.assertEqual(expected_object_name, str(task))
 
     def test_obj_name_title_field_post(self):
         """ Проверка вывода вводного текса до 15 символов """
         task = PostModelTest.post
         expected_object_name = task.text[:15]
-        self.assertEquals(expected_object_name, str(task))
+        self.assertEqual(expected_object_name, str(task))
 
     def test_verbose_name(self):
         """verbose_name поля title совпадает с ожидаемым."""
