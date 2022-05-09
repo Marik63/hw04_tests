@@ -79,7 +79,7 @@ class PostsFormsTestCase(TestCase):
             reverse('posts:post_create'),
             data=form_data,
         )
-        self.assertEqual(Post.objects.all().count(), count+1)
+        self.assertEqual(Post.objects.all().count(), count + 1)
 
     def test_create_invalid_post(self):
         """Проверяем при отправке не валидной формы со страницы создания поста
@@ -123,4 +123,4 @@ class PostsFormsTestCase(TestCase):
             reverse('posts:post_create'),
             data=form_data,
         )
-        self.assertEqual(Post.objects.all().count(), count+1)
+        self.assertEqual(Post.objects.all().count(), count + 1)
