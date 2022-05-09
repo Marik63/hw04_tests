@@ -1,23 +1,10 @@
-from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
+﻿from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
+from http import HTTPStatus
 
-from posts.models import Group
+from posts.models import Group, Post
 
 User = get_user_model()
-
-
-class StaticURLTests(TestCase):
-    def setUp(self):
-        # Устанавливаем данные для тестирования
-        # Создаем неавторизованный клиент
-        self.guest_client = Client()
-
-    def test_homepage(self):
-        # Отправляем запрос через client,
-        # созданный в setUp()
-        response = self.guest_client.get('/')
-        # Утверждаем, что для прохождения теста код должен быть равен 200
-        self.assertEqual(response.status_code, 200)
 
 
 class TaskURLTests(TestCase):
@@ -25,70 +12,96 @@ class TaskURLTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        # Создадим запись в БД для проверки доступности адреса task/test-slug/
-        Group.objects.create(
+        # Создадим запись в БД для проверки доступности адреса group/test-slug/
+        cls.user = User.objects.create_user(username='auth')
+        cls.group = Group.objects.create(
             title='Тестовый заголовок',
-            text='Тестовый текст',
-            slug='test-slug',
+            slug='test_slug',
+            description='Тестовое описание',
+        )
+
+        cls.post = Post.objects.create(
+            author=cls.user,
+            text='Текст поста',
         )
 
     def setUp(self):
         # Создаем неавторизованный клиент
         self.guest_client = Client()
         # Создаем авторизованый клиент
-        self.user = User.objects.create_user(username='StasBasov')
+        self.user = TaskURLTests.user
+        # Создаем второй клиент
         self.authorized_client = Client()
+        # Авторизуем пользователя
         self.authorized_client.force_login(self.user)
 
-    # Проверяем общедоступные страницы
-    def test_home_url_exists_at_desired_location(self):
-        """Страница / доступна любому пользователю."""
-        response = self.guest_client.get('/')
-        self.assertEqual(response.status_code, 200)
-
-    def test_task_added_url_exists_at_desired_location(self):
-        """Страница /added/ доступна любому пользователю."""
-        response = self.guest_client.get('/added/')
-        self.assertEqual(response.status_code, 200)
-
-    # Проверяем доступность страниц для авторизованного пользователя
-    def test_task_list_url_exists_at_desired_location(self):
-        """Страница /task/ доступна авторизованному пользователю."""
-        response = self.authorized_client.get('/task/')
-        self.assertEqual(response.status_code, 200)
-
-    def test_task_detail_url_exists_at_desired_location_authorized(self):
-        """Страница /task/test-slug/ доступна авторизованному пользователю."""
-        response = self.authorized_client.get('/task/test-slug/')
-        self.assertEqual(response.status_code, 200)
-
-    # Проверяем редиректы для неавторизованного пользователя
-    def test_task_list_url_redirect_anonymous_on_admin_login(self):
-        """Страница /task/ перенаправит анонимного пользователя
-        на страницу логина.
-        """
-        response = self.guest_client.get('/task/', follow=True)
-        self.assertRedirects(
-            response, '/admin/login/?next=/task/')
-
-    def test_task_detail_url_redirect_anonymous_on_admin_login(self):
-        """Страница /task/test_slug/ перенаправит анонимного пользователя
-        на страницу логина.
-        """
-        response = self.client.get('/task/test-slug/', follow=True)
-        self.assertRedirects(
-            response, ('/admin/login/?next=/task/test-slug/'))
-
-    # Проверка вызываемых шаблонов для каждого адреса
-    def test_urls_uses_correct_template(self):
-        """URL-адрес использует соответствующий шаблон."""
-        templates_url_names = {
-            'deals/home.html': '/',
-            'deals/added.html': '/added/',
-            'deals/task_list.html': '/task/',
-            'deals/task_detail.html': '/task/test-slug/',
+    def test_authorized_pages(self):
+        """Тестируем доступность страниц авторизованными пользователями"""
+        urls = {
+            '/create/': HTTPStatus.OK,
         }
-        for template, url in templates_url_names.items():
+        for field, expected_value in urls.items():
+            with self.subTest(field=field):
+                response = self.authorized_client.get(field)
+                self.assertEqual(response.status_code, expected_value)
+
+    def test_author_pages(self):
+        """Тестируем доступность страниц автором"""
+        post = TaskURLTests.post
+        urls = {
+            f'/posts/{post.id}/edit/': HTTPStatus.OK,
+        }
+        for field, expected_value in urls.items():
+            with self.subTest(field=field):
+                response = self.authorized_client.get(field)
+                self.assertEqual(response.status_code, expected_value)
+
+    def test_guest_templates(self):
+        """Тестируем шаблоны общедоступных страниц"""
+        post = TaskURLTests.post
+        url_templates = {
+            '/': 'posts/index.html',
+            '/group/test_slug/': 'posts/group_list.html',
+            '/profile/auth/': 'posts/profile.html',
+            f'/posts/{post.id}/': 'posts/post_detail.html',
+        }
+        for url, expected_template in url_templates.items():
+            with self.subTest(url=url):
+                response = self.guest_client.get(url)
+                self.assertTemplateUsed(response, expected_template)
+
+    def test_authorized_templates(self):
+        """Тестируем шаблоны страниц авторизованного пользователя"""
+        url_templates = {
+            '/create/': 'posts/post_create.html',
+        }
+        for url, expected_template in url_templates.items():
             with self.subTest(url=url):
                 response = self.authorized_client.get(url)
-                self.assertTemplateUsed(response, template)
+                self.assertTemplateUsed(response, expected_template)
+
+    def test_author_templates(self):
+        """Тестируем шаблоны страниц автора"""
+        post = TaskURLTests.post
+        url_templates = {
+            f'/posts/{post.id}/edit/': 'posts/post_create.html',
+        }
+        for url, expected_template in url_templates.items():
+            with self.subTest(url=url):
+                response = self.authorized_client.get(url)
+                self.assertTemplateUsed(response, expected_template)
+
+    def test_guest_pages(self):
+        """Тестируем доступность страниц неавторизованными пользователями"""
+        post = TaskURLTests.post
+        urls = {
+            '/': HTTPStatus.OK,
+            '/group/test_slug/': HTTPStatus.OK,
+            '/profile/auth/': HTTPStatus.OK,
+            f'/posts/{post.id}/': HTTPStatus.OK,
+            '/unexisting_page/': HTTPStatus.NOT_FOUND,
+        }
+        for field, expected_value in urls.items():
+            with self.subTest(field=field):
+                response = self.guest_client.get(field)
+                self.assertEqual(response.status_code, expected_value)
