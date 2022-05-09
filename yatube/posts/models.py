@@ -16,7 +16,6 @@ class Group(models.Model):
         help_text='У группы должно быть описание'
     )
 
-
     def __str__(self) -> str:
         return self.title
 
@@ -49,7 +48,6 @@ class Post(models.Model):
 
     def __str__(self):
         return self.text[:15]
-
 
     class Meta:
         ordering = ('-pub_date',)
