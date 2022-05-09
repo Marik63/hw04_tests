@@ -1,4 +1,4 @@
-from django import forms
+﻿from django import forms
 
 from .models import Post
 
@@ -11,3 +11,5 @@ class PostForm(forms.ModelForm):
             "group": "Группа",
             "text": "Текст"
         }
+        help_texts = {'text': 'Напишите текст поста',
+                      'group': 'Группа поста'}

@@ -16,6 +16,7 @@ def index(request):
 
 
 def group_posts(request, slug):
+    """Возращает 10 постов указанной темы"""
     group = get_object_or_404(Group, slug=slug)
     posts = group.posts.select_related('author')
     page_obj = page(request, posts)
@@ -28,6 +29,7 @@ def group_posts(request, slug):
 
 
 def profile(request, username):
+    """Показывает профиль пользователя"""
     author = get_object_or_404(User, username=username)
     posts_count = author.posts.count()
     post_list = author.posts.select_related('author', 'group')
@@ -41,6 +43,7 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
+    """Показывает пост"""
     post = get_object_or_404(Post, pk=post_id)
     context = {
         'post': post,
@@ -50,6 +53,7 @@ def post_detail(request, post_id):
 
 @login_required
 def post_create(request):
+    """Создаёт новый пост"""
     form = PostForm(
         request.POST or None
     )
@@ -66,6 +70,7 @@ def post_create(request):
 
 @login_required
 def post_edit(request, post_id):
+    """Редактирует пост"""
     post = get_object_or_404(Post, id=post_id)
     is_edit = True
     if request.user != post.author:
