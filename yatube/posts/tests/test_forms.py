@@ -1,5 +1,5 @@
-import tempfile
 import shutil
+import tempfile
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -109,18 +109,3 @@ class PostsFormsTestCase(TestCase):
         )
         self.assertEqual(Post.objects.get(
             id=post.id).text, 'Test post 2 text. We change this post')
-
-    @tag('sprint6', 'work')
-    def test_valid_post_with_image_create_db_post(self):
-        """Проверка, что отправка валидного поста с картинкой создает
-        запись в базе данных"""
-        count = Post.objects.all().count()
-        form_data = {
-            'text': 'Test post with image text. Long long text.',
-            'image': 'posts/small.gif',
-        }
-        self.authorized_client.post(
-            reverse('posts:post_create'),
-            data=form_data,
-        )
-        self.assertEqual(Post.objects.all().count(), count + 1)
