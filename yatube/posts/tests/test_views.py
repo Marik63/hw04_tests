@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 
-from ..models import Post, Group
+from posts.models import Group, Post
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
@@ -57,7 +57,6 @@ class PostsPagesTests(TestCase):
         cls.post_image = Post.objects.create(
             author=cls.user,
             text='Тестовый пост с изображением для проверки',
-            image=cls.uploaded,
         )
         cls.group_post = Post.objects.create(
             author=cls.user,
@@ -68,7 +67,6 @@ class PostsPagesTests(TestCase):
             author=cls.user,
             text='Групповой тестовый пост с изображением для проверки',
             group=cls.group_image,
-            image=cls.uploaded,
         )
 
     @classmethod
@@ -92,9 +90,9 @@ class PostsPagesTests(TestCase):
                 'posts/profile.html',
             reverse('posts:post_detail', kwargs={'post_id': f'{post.id}'}):
                 'posts/post_detail.html',
-            reverse('posts:post_create'): 'posts/post_create.html',
+            reverse('posts:post_create'): 'posts/create_post.html',
             reverse('posts:post_edit', kwargs={'post_id': f'{post.id}'}):
-                'posts/post_create.html',
+                'posts/create_post.html',
         }
         for reverse_name, template in templates_pages_names.items():
             with self.subTest(reverse_name=reverse_name):

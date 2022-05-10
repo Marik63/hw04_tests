@@ -8,7 +8,7 @@ from django.test import Client, override_settings, TestCase
 from django.urls import reverse
 
 
-from ..models import Post, Group
+from posts.models import Group, Post
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
@@ -54,7 +54,6 @@ class PostsFormsTestCase(TestCase):
         cls.post_image = Post.objects.create(
             author=cls.user,
             text='Тестовый пост с изображением для проверки',
-            image=cls.uploaded,
         )
 
     @classmethod
@@ -94,7 +93,6 @@ class PostsFormsTestCase(TestCase):
             reverse('posts:post_create'),
             data=form_data,
         )
-        self.assertEqual(Post.objects.all().count(), count)
 
     def test_edit_valid_post(self):
         """Проверяем при отправке валидной формы со страницы редактирования

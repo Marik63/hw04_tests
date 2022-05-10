@@ -73,7 +73,7 @@ class TaskURLTests(TestCase):
     def test_authorized_templates(self):
         """Тестируем шаблоны страниц авторизованного пользователя"""
         url_templates = {
-            '/create/': 'posts/post_create.html',
+            '/create/': 'posts/create_post.html',
         }
         for url, expected_template in url_templates.items():
             with self.subTest(url=url):
@@ -84,7 +84,7 @@ class TaskURLTests(TestCase):
         """Тестируем шаблоны страниц автора"""
         post = TaskURLTests.post
         url_templates = {
-            f'/posts/{post.id}/edit/': 'posts/post_create.html',
+            f'/posts/{post.id}/edit/': 'posts/create_post.html',
         }
         for url, expected_template in url_templates.items():
             with self.subTest(url=url):
