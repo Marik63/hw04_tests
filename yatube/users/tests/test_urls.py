@@ -54,8 +54,6 @@ class StaticURLTests(TestCase):
             '/auth/logout/': 'users/logged_out.html',
             '/auth/signup/': 'users/signup.html',
             '/auth/login/': 'users/login.html',
-            '/auth/password_reset/': 'users/password_reset_form.html',
-            '/auth/password_reset/': 'users/password_reset_done.html',
             reverse('users:logout'): 'users/logged_out.html',
             reverse('users:signup'): 'users/signup.html',
             reverse('users:login'): 'users/login.html',
@@ -72,8 +70,6 @@ class StaticURLTests(TestCase):
     def test_authorized_templates(self):
         """Тестируем шаблоны страниц авторизованных пользователей"""
         url_templates = {
-            '/auth/password_change/': 'users/password_change_form.html',
-            '/auth/password_change/': 'users/password_change_done.html',
             reverse('users:password_change'):
                 'users/password_change_form.html',
             reverse('users:password_change_done'):
