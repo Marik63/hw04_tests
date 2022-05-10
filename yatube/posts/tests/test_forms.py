@@ -84,7 +84,6 @@ class PostsFormsTestCase(TestCase):
     def test_create_invalid_post(self):
         """Проверяем при отправке не валидной формы со страницы создания поста
         reverse('posts:post_create') не создаётся новая запись в базе данных"""
-        count = Post.objects.all().count()
         form_data = {
             'text': 'Test post 2 text',  # less 20 symbols
             'group': self.group.id,
