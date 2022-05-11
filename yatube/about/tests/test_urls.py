@@ -5,11 +5,11 @@ from django.test import TestCase, Client
 
 class StaticURLTests(TestCase):
     def setUp(self):
-        """Настройка класса"""
+        """Настройка класса."""
         self.guest_client = Client()
 
     def test_about_pages(self):
-        """Тестируем доступность страниц приложения about"""
+        """Тестируем доступность страниц приложения about."""
         urls = {
             '/about/author/': HTTPStatus.OK,
             '/about/tech/': HTTPStatus.OK,
@@ -20,7 +20,7 @@ class StaticURLTests(TestCase):
                 self.assertEqual(response.status_code, expected_status)
 
     def test_about_templates(self):
-        """Тестируем использование шаблонов приложения about"""
+        """Тестируем использование шаблонов приложения about."""
         urls = {
             '/about/author/': 'about/author.html',
             '/about/tech/': 'about/tech.html',

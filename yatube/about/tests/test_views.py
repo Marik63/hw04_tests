@@ -20,7 +20,7 @@ class StaticViewsTests(TestCase):
                 self.assertEqual(response.status_code, expected_status)
 
     def test_about_pages_uses_correct_template(self):
-        """При запросе к about применяется правильные шаблоны"""
+        """При запросе к about применяется правильные шаблоны."""
         urls = {
             reverse('about:author'): 'about/author.html',
             reverse('about:tech'): 'about/tech.html',
