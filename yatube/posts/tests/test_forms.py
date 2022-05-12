@@ -49,24 +49,22 @@ class PostsFormsTestCase(TestCase):
         self.authorized_client.force_login(self.user)
 
     def test_create_valid_post(self):
-        """Проверяем при отправке валидной формы со страницы создания поста
-        reverse('posts:post_create') создаётся новая запись в базе данных"""
+        """
+        Проверяем при отправке валидной формы со страницы создания поста
+        reverse('posts:post_create') создаётся новая запись в базе данных.
+        """
         # Подсчитаем количество записей в Post
         count = Post.objects.all().count()
         form_data = {
             'text': 'Test post 2 text. It must be at least 20 symbols.',
             'group': self.group.id,
         }
-        # Отправляем POST-запрос
-        response = self.authorized_client.post(
+        self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
             follow=True
         )
-        # Проверяем, сработал ли редирект
-        self.assertRedirects(response, reverse(
-            'posts:profile', kwargs={'username': 'test_user'})
-        )
+
         # Проверяем, увеличилось ли число постов
         self.assertEqual(Post.objects.all().count(), count + 1)
         self.assertTrue(Post.objects.filter(
@@ -75,8 +73,10 @@ class PostsFormsTestCase(TestCase):
             )
 
     def test_edit_valid_post(self):
-        """Проверяем при отправке валидной формы со страницы редактирования
-        поста reverse('posts:post_edit') меняется запись в базе данных"""
+        """
+        Проверяем при отправке валидной формы со страницы редактирования
+        поста reverse('posts:post_edit') меняется запись в базе данных.
+        """
         post = PostsFormsTestCase.post
         form_data = {
             'text': 'Test post 2 text. We change this post',

@@ -25,18 +25,17 @@ class PostModelTest(TestCase):
             group=cls.group,
         )
 
-
     def test_obj_name_title_field(self):
-        """ Проверка вывода вводного текса до 15 символов и 
-        наличия поля title в модели."""
+        """
+        Проверка вывода вводного текса до 15 символов и 
+        наличия поля title в модели.
+        """
         task = PostModelTest.post
         expected_object_name = task.text[:15]
         self.assertEqual(expected_object_name, str(task))
-        
         task = PostModelTest.group
         expected_object_name = task.title
         self.assertEqual(expected_object_name, str(task))
-
 
     def test_verbose_name(self):
         """verbose_name поля title совпадает с ожидаемым."""

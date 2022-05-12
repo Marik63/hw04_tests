@@ -4,8 +4,6 @@ from django.urls import reverse
 
 from posts.models import Post, Group
 
-from itertools import islice
-
 User = get_user_model()
 
 
