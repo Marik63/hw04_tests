@@ -69,8 +69,7 @@ class PostsFormsTestCase(TestCase):
         self.assertEqual(Post.objects.all().count(), count + 1)
         self.assertTrue(Post.objects.filter(
             text = 'Test post 2 text. It must be at least 20 symbols.',
-            group = PostsFormsTestCase.group).exists(),
-            )
+            group = PostsFormsTestCase.group).exists())
 
     def test_edit_valid_post(self):
         """
@@ -88,8 +87,8 @@ class PostsFormsTestCase(TestCase):
         )
         self.assertEqual(
             Post.objects.get(
-            id=post.id).text, 'Test post 2 text. We change this post'
-        )
+                id=post.id).text, 'Test post 2 text. We change this post'
+            )
         # Отправляем POST-запрос
         response = self.authorized_client.post(
             reverse('posts:post_create'),

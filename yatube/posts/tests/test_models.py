@@ -26,8 +26,7 @@ class PostModelTest(TestCase):
         )
 
     def test_obj_name_title_field(self):
-        """
-        Проверка вывода вводного текса до 15 символов и 
+        """Проверка вывода вводного текса до 15 символов и 
         наличия поля title в модели.
         """
         task = PostModelTest.post
