@@ -4,6 +4,8 @@ from django.urls import reverse
 
 from posts.models import Post, Group
 
+from itertools import islice
+
 User = get_user_model()
 
 
@@ -20,12 +22,9 @@ class PaginatorTest(TestCase):
             slug='paginator_test_slug',
             description='Тестовое описание',
         )
-        for i in range(cls.POSTS_NUMBER):
-            Post.objects.create(
-                author=cls.user,
-                group=cls.group,
-                text=f'Тестовый пост для проверки. Номер: {i}',
-            )
+        Post.objects.bulk_create(
+            [Post(text=f'Post {i}') for i in range(1000)],
+        )
 
     def setUp(self) -> None:
         self.authorized_client = Client()

@@ -36,19 +36,11 @@ class TaskURLTests(TestCase):
         self.authorized_client.force_login(self.user)
 
     def test_authorized_pages(self):
-        """Тестируем доступность страниц авторизованными пользователями"""
-        urls = {
-            '/create/': HTTPStatus.OK,
-        }
-        for field, expected_value in urls.items():
-            with self.subTest(field=field):
-                response = self.authorized_client.get(field)
-                self.assertEqual(response.status_code, expected_value)
-
-    def test_author_pages(self):
-        """Тестируем доступность страниц автором"""
+        """Тестируем доступность страниц авторизованными пользователями и
+        доступность страниц автором."""
         post = TaskURLTests.post
         urls = {
+            '/create/': HTTPStatus.OK,
             f'/posts/{post.id}/edit/': HTTPStatus.OK,
         }
         for field, expected_value in urls.items():
@@ -57,7 +49,7 @@ class TaskURLTests(TestCase):
                 self.assertEqual(response.status_code, expected_value)
 
     def test_guest_templates(self):
-        """Тестируем шаблоны общедоступных страниц"""
+        """Тестируем шаблоны общедоступных страниц."""
         post = TaskURLTests.post
         url_templates = {
             '/': 'posts/index.html',
@@ -70,20 +62,11 @@ class TaskURLTests(TestCase):
                 response = self.guest_client.get(url)
                 self.assertTemplateUsed(response, expected_template)
 
-    def test_authorized_templates(self):
-        """Тестируем шаблоны страниц авторизованного пользователя"""
-        url_templates = {
-            '/create/': 'posts/create_post.html',
-        }
-        for url, expected_template in url_templates.items():
-            with self.subTest(url=url):
-                response = self.authorized_client.get(url)
-                self.assertTemplateUsed(response, expected_template)
-
     def test_author_templates(self):
-        """Тестируем шаблоны страниц автора"""
+        """Тестируем шаблоны страниц авторизованного пользователя и автора."""
         post = TaskURLTests.post
         url_templates = {
+            '/create/': 'posts/create_post.html',
             f'/posts/{post.id}/edit/': 'posts/create_post.html',
         }
         for url, expected_template in url_templates.items():
@@ -92,7 +75,7 @@ class TaskURLTests(TestCase):
                 self.assertTemplateUsed(response, expected_template)
 
     def test_guest_pages(self):
-        """Тестируем доступность страниц неавторизованными пользователями"""
+        """Тестируем доступность страниц неавторизованными пользователями."""
         post = TaskURLTests.post
         urls = {
             '/': HTTPStatus.OK,
