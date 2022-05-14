@@ -168,9 +168,9 @@ class PostsPagesTests(TestCase):
     def test_grouped_post_show_in_pages(self):
         """Проверяем что пост с группой попадает на страницы."""
         group_post_pages = {
-            reverse('posts:index'): 4,
+            reverse('posts:index'): 2,
             reverse('posts:group_list', kwargs={'slug': 'posts_test_slug'}): 1,
-            reverse('posts:profile', kwargs={'username': 'posts_test'}): 4,
+            reverse('posts:profile', kwargs={'username': 'posts_test'}): 2,
         }
         for value, expected in group_post_pages.items():
             with self.subTest(value=value):
