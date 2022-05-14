@@ -76,7 +76,7 @@ class PostsFormsTestCase(TestCase):
             Post.objects.filter(
                 text='Test post 2 text. It must be at least 20 symbols.',
                 group=PostsFormsTestCase.group).exists()
-                )
+            )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_edit_valid_post(self):
