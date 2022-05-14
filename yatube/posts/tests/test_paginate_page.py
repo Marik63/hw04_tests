@@ -25,8 +25,7 @@ class PaginatorTest(TestCase):
                     author=cls.user,
                     group=cls.group,
                 )
-            for i in range(15)
-            ]
+            for i in range(15)]
         )
 
     def setUp(self) -> None:
