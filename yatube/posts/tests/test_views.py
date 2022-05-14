@@ -80,7 +80,7 @@ class PostsPagesTests(TestCase):
         self.authorized_client.force_login(PostsPagesTests.user)
 
     def test_pages_use_correct_templates(self):
-        """Проверяем что URL адреса использую корректные шаблоны"""
+        """Проверяем что URL адреса использую корректные шаблоны."""
         post = PostsPagesTests.post
         templates_pages_names = {
             reverse('posts:index'): 'posts/index.html',
@@ -100,7 +100,7 @@ class PostsPagesTests(TestCase):
                 self.assertTemplateUsed(response, template)
 
     def test_guest_pages_has_correct_http_status(self):
-        """Тестируем доступность страниц неавторизованными пользователями"""
+        """Тестируем доступность страниц неавторизованными пользователями."""
         post = PostsPagesTests.post
         urls = {
             reverse('posts:index'):
@@ -118,7 +118,7 @@ class PostsPagesTests(TestCase):
                 self.assertEqual(response.status_code, expected_value)
 
     def test_authorized_pages_has_correct_http_status(self):
-        """Тестируем доступность страниц авторизованными пользователями"""
+        """Тестируем доступность страниц авторизованными пользователями."""
         urls = {
             reverse('posts:post_create'): HTTPStatus.OK,
         }
@@ -128,7 +128,7 @@ class PostsPagesTests(TestCase):
                 self.assertEqual(response.status_code, expected_value)
 
     def test_author_pages_has_correct_http_status(self):
-        """Тестируем доступность страниц автором"""
+        """Тестируем доступность страниц автором."""
         post = PostsPagesTests.post
         urls = {
             reverse('posts:post_edit', kwargs={'post_id': f'{post.id}'}):
@@ -140,7 +140,7 @@ class PostsPagesTests(TestCase):
                 self.assertEqual(response.status_code, expected_value)
 
     def test_post_detail_page_show_correct_context(self):
-        """Проверяем что post_detail имеет правильный context"""
+        """Проверяем что post_detail имеет правильный context."""
         post = PostsPagesTests.post
         context_pages = {
             reverse('posts:post_detail', kwargs={'post_id': f'{post.id}'}):
@@ -152,7 +152,7 @@ class PostsPagesTests(TestCase):
                 self.assertEqual(response.context['post'].id, expect_context)
 
     def test_post_create_page_show_correct_context(self):
-        """Проверяем что post_create имеет правильный context"""
+        """Проверяем что post_create имеет правильный context."""
         response = self.authorized_client.get(reverse('posts:post_create'))
         form_fields = {
             'text': forms.fields.CharField,
@@ -164,7 +164,7 @@ class PostsPagesTests(TestCase):
                 self.assertIsInstance(form_field, expected)
 
     def test_post_edit_page_show_correct_context(self):
-        """Проверяем что post_edit имеет правильный context"""
+        """Проверяем что post_edit имеет правильный context."""
         post = PostsPagesTests.post
         url = reverse('posts:post_edit', kwargs={'post_id': f'{post.id}'})
         response = self.authorized_client.get(url)
@@ -180,7 +180,7 @@ class PostsPagesTests(TestCase):
         self.assertEqual(response.context["is_edit"], is_edit)
 
     def test_pages_has_correct_context(self):
-        """Тестируем что страницы имеют корректный context"""
+        """Тестируем что страницы имеют корректный context."""
         paginator_pages = {
             reverse('posts:index'): 'page_obj',
             reverse('posts:group_list', kwargs={
@@ -194,7 +194,7 @@ class PostsPagesTests(TestCase):
                 self.assertIsNotNone(response.context[obj])
 
     def test_grouped_post_show_in_pages(self):
-        """Проверяем что пост с группой попадает на страницы"""
+        """Проверяем что пост с группой попадает на страницы."""
         group_post_pages = {
             reverse('posts:index'): 4,
             reverse('posts:group_list', kwargs={'slug': 'posts_test_slug'}): 1,
@@ -206,7 +206,7 @@ class PostsPagesTests(TestCase):
                 self.assertEqual(len(response.context["page_obj"]), expected)
 
     def test_new_group_page_dont_have_a_post(self):
-        """Проверяем что страница новой группы не имеет постов"""
+        """Проверяем что страница новой группы не имеет постов."""
         url = reverse('posts:group_list', args=['posts_test_slug2'])
         response = self.authorized_client.get(url)
         self.assertEqual(len(response.context["page_obj"]), 0)

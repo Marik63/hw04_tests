@@ -1,5 +1,6 @@
 import shutil
 import tempfile
+from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -59,17 +60,24 @@ class PostsFormsTestCase(TestCase):
             'text': 'Test post 2 text. It must be at least 20 symbols.',
             'group': self.group.id,
         }
-        self.authorized_client.post(
+        response = self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
             follow=True
         )
+        self.assertRedirects(
+            response,
+            reverse('posts:profile', kwargs={'username': self.user})
+        )
 
         # Проверяем, увеличилось ли число постов
         self.assertEqual(Post.objects.all().count(), count + 1)
-        self.assertTrue(Post.objects.filter(
-            text='Test post 2 text. It must be at least 20 symbols.',
-            group=PostsFormsTestCase.group).exists())
+        self.assertTrue(
+            Post.objects.filter(
+                text='Test post 2 text. It must be at least 20 symbols.',
+                group=PostsFormsTestCase.group).exists()
+            )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_edit_valid_post(self):
         """
@@ -98,3 +106,4 @@ class PostsFormsTestCase(TestCase):
         # Проверяем, сработал ли редирект
         self.assertRedirects(response, reverse(
             'posts:profile', kwargs={'username': 'test_user'}))
+        self.assertEqual(response.status_code, HTTPStatus.OK)

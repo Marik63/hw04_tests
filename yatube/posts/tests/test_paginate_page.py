@@ -8,12 +8,10 @@ User = get_user_model()
 
 
 class PaginatorTest(TestCase):
-    """Класс тестирования паджинатора"""
+    """Класс тестирования паджинатора."""
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.POSTS_NUMBER = 29  # from 21 to 29
-        cls.PAGE_POSTS = 10
         cls.user = User.objects.create_user(username='paginator')
         cls.group = Group.objects.create(
             title='Тестовая группа',
@@ -21,7 +19,14 @@ class PaginatorTest(TestCase):
             description='Тестовое описание',
         )
         Post.objects.bulk_create(
-            [Post(text=f'Post {i}') for i in range(1000)],
+            [
+                Post(
+                    text=f'{i} - Тестовый пост с группой.',
+                    author=cls.user,
+                    group=cls.group,
+                )
+            for i in range(15)
+            ]
         )
 
     def setUp(self) -> None:
@@ -29,7 +34,7 @@ class PaginatorTest(TestCase):
         self.authorized_client.force_login(PaginatorTest.user)
 
     def test_paginator_first_page_records(self):
-        """Тестируем первую страницу паджинатора"""
+        """Тестируем первую страницу паджинатора."""
         paginator_pages = {
             reverse('posts:index'): 'page_obj',
             reverse('posts:group_list', kwargs={
@@ -40,10 +45,10 @@ class PaginatorTest(TestCase):
         for reverse_name, obj in paginator_pages.items():
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
-                self.assertEqual(len(response.context[obj]), self.PAGE_POSTS)
+                self.assertEqual(len(response.context[obj]), 10)
 
     def test_paginator_second_page_records(self):
-        """Тестируем вторую страницу паджинатора"""
+        """Тестируем вторую страницу паджинатора."""
         paginator_pages = {
             reverse('posts:index') + '?page=2': 'page_obj',
             reverse('posts:group_list',
@@ -55,20 +60,4 @@ class PaginatorTest(TestCase):
         for reverse_name, obj in paginator_pages.items():
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
-                self.assertEqual(len(response.context[obj]), self.PAGE_POSTS)
-
-    def test_paginator_third_page_records(self):
-        """Тестируем третью страницу паджинатора"""
-        paginator_pages = {
-            reverse('posts:index') + '?page=3': 'page_obj',
-            reverse('posts:group_list',
-                    kwargs={'slug': 'paginator_test_slug'})
-            + '?page=3': 'page_obj',
-            reverse('posts:profile',
-                    kwargs={'username': 'paginator'}) + '?page=3': 'page_obj',
-        }
-        for reverse_name, obj in paginator_pages.items():
-            with self.subTest(reverse_name=reverse_name):
-                response = self.authorized_client.get(reverse_name)
-                self.assertEqual(len(response.context[obj]),
-                                 self.POSTS_NUMBER % self.PAGE_POSTS)
+                self.assertEqual(len(response.context[obj]), 5)
