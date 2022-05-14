@@ -74,11 +74,11 @@ class PostsFormsTestCase(TestCase):
             response,
             reverse('posts:profile', kwargs={'username': self.user})
         )
-        self.assertEqual(post_1.text, 'Test post 1 text. It must be at least 20 symbols.')
+        self.assertEqual(
+            post_1.text, 'Test post 1 text. It must be at least 20 symbols.')
         self.assertEqual(author_1.username, 'test_user')
         self.assertEqual(group_1.title, 'Test group 1')
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
 
     def test_edit_valid_post(self):
         """
