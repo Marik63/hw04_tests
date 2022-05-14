@@ -1,10 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.conf import settings
 
 from posts.models import Post, Group
 
 User = get_user_model()
+
+QUANTITY_PAGES_2 = 5
+QUANTITY_POSTS = settings.PAGES + QUANTITY_PAGES_2
 
 
 class PaginatorTest(TestCase):
@@ -25,7 +29,7 @@ class PaginatorTest(TestCase):
                     author=cls.user,
                     group=cls.group,
                 )
-                for i in range(15)]
+                for i in range(QUANTITY_POSTS)]
         )
 
     def setUp(self) -> None:
@@ -44,7 +48,7 @@ class PaginatorTest(TestCase):
         for reverse_name, obj in paginator_pages.items():
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
-                self.assertEqual(len(response.context[obj]), 10)
+                self.assertEqual(len(response.context[obj]), settings.PAGES)
 
     def test_paginator_second_page_records(self):
         """Тестируем вторую страницу паджинатора."""
@@ -59,4 +63,4 @@ class PaginatorTest(TestCase):
         for reverse_name, obj in paginator_pages.items():
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
-                self.assertEqual(len(response.context[obj]), 5)
+                self.assertEqual(len(response.context[obj]), QUANTITY_PAGES_2)

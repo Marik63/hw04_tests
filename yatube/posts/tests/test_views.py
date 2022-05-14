@@ -21,19 +21,6 @@ class PostsPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        small_gif = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-            b'\x0A\x00\x3B'
-        )
-        cls.uploaded = SimpleUploadedFile(
-            name='small.gif',
-            content=small_gif,
-            content_type='image/gif'
-        )
         cls.user = User.objects.create_user(username='posts_test')
         cls.group = Group.objects.create(
             title='Тестовая группа',
@@ -45,28 +32,14 @@ class PostsPagesTests(TestCase):
             slug='posts_test_slug2',
             description='Тестовое описание 2',
         )
-        cls.group_image = Group.objects.create(
-            title='Тестовая группа для постов с изображением',
-            slug='posts_test_image_slug',
-            description='Тестовое описание с изображением',
-        )
         cls.post = Post.objects.create(
             author=cls.user,
             text='Тестовый пост для проверки',
-        )
-        cls.post_image = Post.objects.create(
-            author=cls.user,
-            text='Тестовый пост с изображением для проверки',
         )
         cls.group_post = Post.objects.create(
             author=cls.user,
             text='Групповой тестовый пост для проверки',
             group=cls.group,
-        )
-        cls.group_post_image = Post.objects.create(
-            author=cls.user,
-            text='Групповой тестовый пост с изображением для проверки',
-            group=cls.group_image,
         )
 
     @classmethod

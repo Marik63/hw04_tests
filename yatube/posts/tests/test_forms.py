@@ -55,7 +55,7 @@ class PostsFormsTestCase(TestCase):
         reverse('posts:post_create') создаётся новая запись в базе данных.
         """
         # Подсчитаем количество записей в Post
-        count = Post.objects.all().count()
+        count = Post.objects.count()
         form_data = {
             'text': 'Test post 2 text. It must be at least 20 symbols.',
             'group': self.group.id,
@@ -65,19 +65,20 @@ class PostsFormsTestCase(TestCase):
             data=form_data,
             follow=True
         )
+        post_1 = Post.objects.get(id=self.group.id)
+        author_1 = User.objects.get(username='test_user')
+        group_1 = Group.objects.get(title='Test group 1')
+        # Проверяем, увеличилось ли число постов
+        self.assertEqual(Post.objects.count(), count + 1)
         self.assertRedirects(
             response,
             reverse('posts:profile', kwargs={'username': self.user})
         )
-
-        # Проверяем, увеличилось ли число постов
-        self.assertEqual(Post.objects.all().count(), count + 1)
-        self.assertTrue(
-            Post.objects.filter(
-                text='Test post 2 text. It must be at least 20 symbols.',
-                group=PostsFormsTestCase.group).exists()
-        )
+        self.assertEqual(post_1.text, 'Test post 1 text. It must be at least 20 symbols.')
+        self.assertEqual(author_1.username, 'test_user')
+        self.assertEqual(group_1.title, 'Test group 1')
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     def test_edit_valid_post(self):
         """
@@ -92,18 +93,25 @@ class PostsFormsTestCase(TestCase):
         self.authorized_client.post(
             reverse('posts:post_edit', kwargs={'post_id': f'{post.id}'}),
             data=form_data,
+            follow=True,
         )
+        author_2 = User.objects.get(username='test_user')
+        group_2 = Group.objects.get(title='Test group 1')
         self.assertEqual(
             Post.objects.get(
                 id=post.id).text, 'Test post 2 text. We change this post')
+        self.assertEqual(author_2.username, 'test_user')
+        self.assertEqual(group_2.title, 'Test group 1')
 
         # Отправляем POST-запрос
         response = self.authorized_client.post(
-            reverse('posts:post_create'),
+            reverse('posts:post_edit', kwargs={'post_id': self.post.id}),
             data=form_data,
             follow=True
         )
-        # Проверяем, сработал ли редирект
-        self.assertRedirects(response, reverse(
-            'posts:profile', kwargs={'username': 'test_user'}))
+        self.assertEqual(response.context.get('post').text, form_data['text'])
+        self.assertEqual(
+            response.context.get('post').group.id,
+            form_data['group']
+        )
         self.assertEqual(response.status_code, HTTPStatus.OK)
