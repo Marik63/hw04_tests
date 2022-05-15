@@ -1,10 +1,9 @@
 from http import HTTPStatus
-import shutil
 import tempfile
 
 from django.contrib.auth import get_user_model
 from django import forms
-from django.test import Client, TestCase, override_settings
+from django.test import Client, TestCase
 from django.urls import reverse
 from django.conf import settings
 
@@ -15,7 +14,6 @@ TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 User = get_user_model()
 
 
-@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostsPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -41,10 +39,6 @@ class PostsPagesTests(TestCase):
             group=cls.group,
         )
 
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self) -> None:
         self.guest_client = Client()

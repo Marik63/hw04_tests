@@ -1,21 +1,13 @@
-import shutil
-import tempfile
-from http import HTTPStatus
-
 from django.contrib.auth import get_user_model
-from django.conf import settings
-from django.test import Client, override_settings, TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
-
 
 from posts.models import Group, Post
 
-TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 User = get_user_model()
 
 
-@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostsFormsTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -32,16 +24,10 @@ class PostsFormsTestCase(TestCase):
         )
         # Создадим запись в БД
         cls.post = Post.objects.create(
-            text='Test post 1 text. It must be at least 20 symbols.',
+            text='Test post 1 text.',
             author=cls.user,
             group=cls.group,
-            pub_date=Post.pub_date
         )
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self) -> None:
         self.user = PostsFormsTestCase.user
@@ -55,9 +41,10 @@ class PostsFormsTestCase(TestCase):
         reverse('posts:post_create') создаётся новая запись в базе данных.
         """
         # Подсчитаем количество записей в Post
+        post = Post.objects.latest('pub_date')
         count = Post.objects.count()
         form_data = {
-            'text': 'Test post 2 text. It must be at least 20 symbols.',
+            'text': 'Test post 1 text.',
             'group': self.group.id,
         }
         response = self.authorized_client.post(
@@ -65,53 +52,36 @@ class PostsFormsTestCase(TestCase):
             data=form_data,
             follow=True
         )
-        post_1 = Post.objects.get(id=self.group.id)
-        author_1 = User.objects.get(username='test_user')
-        group_1 = Group.objects.get(title='Test group 1')
         # Проверяем, увеличилось ли число постов
         self.assertEqual(Post.objects.count(), count + 1)
         self.assertRedirects(
             response,
             reverse('posts:profile', kwargs={'username': self.user})
         )
-        self.assertEqual(
-            post_1.text, 'Test post 1 text. It must be at least 20 symbols.')
-        self.assertEqual(author_1.username, 'test_user')
-        self.assertEqual(group_1.title, 'Test group 1')
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        post_last = {
+            post.text: form_data['text'],
+            post.group.id: form_data['group'],
+            post.author: PostsFormsTestCase.user
+        }
+        for date, value in post_last.items():
+            with self.subTest(date=date):
+                self.assertEqual(date, value)
 
     def test_edit_valid_post(self):
         """
         Проверяем при отправке валидной формы со страницы редактирования
         поста reverse('posts:post_edit') меняется запись в базе данных.
         """
-        post = PostsFormsTestCase.post
+        post = Post.objects.latest('pub_date')
         form_data = {
-            'text': 'Test post 2 text. We change this post',
+            'text': 'Test post 1 text.',
             'group': self.group.id,
         }
-        self.authorized_client.post(
-            reverse('posts:post_edit', kwargs={'post_id': f'{post.id}'}),
-            data=form_data,
-            follow=True,
-        )
-        author_2 = User.objects.get(username='test_user')
-        group_2 = Group.objects.get(title='Test group 1')
-        self.assertEqual(
-            Post.objects.get(
-                id=post.id).text, 'Test post 2 text. We change this post')
-        self.assertEqual(author_2.username, 'test_user')
-        self.assertEqual(group_2.title, 'Test group 1')
-
-        # Отправляем POST-запрос
-        response = self.authorized_client.post(
-            reverse('posts:post_edit', kwargs={'post_id': self.post.id}),
-            data=form_data,
-            follow=True
-        )
-        self.assertEqual(response.context.get('post').text, form_data['text'])
-        self.assertEqual(
-            response.context.get('post').group.id,
-            form_data['group']
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        post_last = {
+            post.text: form_data['text'],
+            post.group.id: form_data['group'],
+            post.author: PostsFormsTestCase.user,
+        }
+        for date, value in post_last.items():
+            with self.subTest(date=date):
+                self.assertEqual(date, value)
