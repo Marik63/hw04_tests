@@ -39,7 +39,6 @@ class PostsPagesTests(TestCase):
             group=cls.group,
         )
 
-
     def setUp(self) -> None:
         self.guest_client = Client()
         self.authorized_client = Client()

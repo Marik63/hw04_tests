@@ -41,10 +41,9 @@ class PostsFormsTestCase(TestCase):
         reverse('posts:post_create') создаётся новая запись в базе данных.
         """
         # Подсчитаем количество записей в Post
-        post = Post.objects.latest('pub_date')
         count = Post.objects.count()
         form_data = {
-            'text': 'Test post 1 text.',
+            'text': 'Test post 2 text.',
             'group': self.group.id,
         }
         response = self.authorized_client.post(
@@ -58,6 +57,7 @@ class PostsFormsTestCase(TestCase):
             response,
             reverse('posts:profile', kwargs={'username': self.user})
         )
+        post = Post.objects.latest('pub_date')
         post_last = {
             post.text: form_data['text'],
             post.group.id: form_data['group'],
@@ -72,11 +72,11 @@ class PostsFormsTestCase(TestCase):
         Проверяем при отправке валидной формы со страницы редактирования
         поста reverse('posts:post_edit') меняется запись в базе данных.
         """
-        post = Post.objects.latest('pub_date')
         form_data = {
             'text': 'Test post 1 text.',
             'group': self.group.id,
         }
+        post = Post.objects.latest('pub_date')
         post_last = {
             post.text: form_data['text'],
             post.group.id: form_data['group'],
